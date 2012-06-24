@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Broadway</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://static.firebase.com/v0/firebase.js"></script>
+    <script type="text/javascript">
+        function updateContent(snapshot) {
+            html = snapshot.val();
+            $('#content')[0].innerHTML = html;
+        }
+    </script>
+    
+    <style type="text/css">
+        body {
+            background-color: black;
+        }
+        #content {
+            text-align: center;
+            font-size: 64pt;
+            font-family: Georgia, Arial, Verdana, sans-serif;
+            text-shadow: rgb(.5) 0 5px 5px;
+            color:white;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div id='content'></div>
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var dataRef = new Firebase('http://gamma.firebase.com/broadway/');
+            dataRef.on('value', updateContent);
+        });
+    </script>
+</body>
+</html>
