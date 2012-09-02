@@ -1,0 +1,33 @@
+<style type='text/css'>
+body {
+ background: black;
+ -webkit-animation-duration: 5s;
+ -webkit-animation-iteration-count: 1;
+ -webkit-animation-name: wait;
+ -webkit-animation-timing-function: linear;
+}
+
+#hello {
+ text-align: center;
+ color:white
+}
+
+@-webkit-keyframes wait {
+ from {
+  background: white;
+ }
+ to {
+  background: black;
+ }
+}
+</style>
+
+<div id='please-wait'>
+ Please wait...
+</div>
+
+<div id='hello'>
+ <p>Broadway</p>
+ <p>at</p>
+ <p>AngelHack</p>
+</div>

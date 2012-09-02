@@ -7,21 +7,40 @@
     <script src="http://static.firebase.com/v0/firebase.js"></script>
     <script type="text/javascript">
         function updateContent(snapshot) {
-            html = snapshot.val();
-            $('#content')[0].innerHTML = html;
+            val = snapshot.val();
+            if(val.type == 'html')
+                $('#content')[0].innerHTML = val.value;
+            else if(val.type == 'js')
+                eval(val.value);
+            else if(val.type == 'css') {
+                $('#content').css(val.value);
+            }
+            else {
+                console.log("Couldn't figure out what to do with "+val);
+            }
         }
     </script>
     
     <style type="text/css">
+        html {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+        }
         body {
-            background-color: black;
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
         }
         #content {
+            width: 100%;
+            height: 100%;
             text-align: center;
             font-size: 64pt;
             font-family: Georgia, Arial, Verdana, sans-serif;
             text-shadow: rgb(.5) 0 5px 5px;
-            color:white;
+            -webkit-transition-property: all;
+            -webkit-transition-duration: 1s;
         }
     </style>
 </head>

@@ -2,81 +2,11 @@
 
 <html>
 <head>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <title>Broadway controller</title>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="http://static.firebase.com/v0/firebase.js"></script>
-    <script type="text/javascript">
-        
-        function attributes(attr) {
-            var str = "";
-            for(key in attr) {
-                str += key+"="+attr[key]+" "
-            }
-            return str;
-        }
-        
-
-        function audio(url, attr) {
-            attr = attr || {autoplay: true};
-            return "<audio "+attributes(attr)+">" +
-                "<source src='"+url+"' />" + 
-                "</audio>"
-        }
-        
-        function video(url, attr) {
-            attr = attr || {autoplay: true};
-            return "<video "+attributes(attr)+">" +
-                "<source src='"+url+"' />" +
-                "</video>"
-        }
-        
-        function iframe(url, attr) {
-            attr = attr || {};
-            return "<iframe src='"+url+"'/>";
-        }
-        
-
-        function page(url) {
-            $.get('pages/'+url+'.html', function(response) {
-                dataRef.set(response);
-            });
-        }
-
-
-        var index = -1;
-        var dataRef = new Firebase('http://gamma.firebase.com/broadway/');
-        fragments = []
-        
-        fragments.push()
-        fragments.push('<iframe src="http://player.vimeo.com/video/7458473?autoplay=1" width="853" height="480" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>')
-        fragments = fragments.concat("Presentations are boring. Broadway is not!".split(" "))
-        fragments.push(audio("http://noproblo.dayjo.org/ZeldaSounds/LOZ/LOZ_Shield.wav") + "Beep.");
-        
-        function reset() {
-            index = -1;
-            dataRef.set(null);
-        }
-        
-        function setFragment(idx) {
-            index = idx;
-            if(index < fragments.length) {
-                frag = fragments[index];
-                dataRef.set(frag);
-            } else {
-                dataRef.set("Curtains drop.");
-            }
-        }
-        
-        $(document).ready(function() {
-            $(document).keyup(function (event) {
-                console.log(event);
-                if( event.which == 32) {//space
-                    nextFragment();
-                }
-            });
-            reset();
-        });
-    </script>
+    <script type="text/javascript" src="controller.js"></script>
     <style type="text/css">
         body {
             background: #c8c8c8;
@@ -84,11 +14,11 @@
         }
         p {
             background: #fff;
-            width: 50%;
             border-radius: 5pt;
             border: 2px solid gray;
             text-align: center;
             float: left;
+            width: 100%;
         }
         #iframe {
             width: 100%;
@@ -105,6 +35,16 @@
 <p>
     <button onclick="reset()">Reset</button>
 </p>
+<p>
+    
+    <button onclick="sendCSS({'background' : 'black'})">Background black</button>
+    <button onclick="sendCSS({'background' : 'white'})">Background white</button>
+    
+</p>
+<p>
+    <button onclick="sendCSS({'color' : 'black'})">Text black</button>
+    <button onclick="sendCSS({'color' : 'white'})">Text white</button>
+</p>
 
 <p>
 Enter a url to iframe: <input type='text' id='urlInput' placeholder='Enter a url...'>
@@ -112,19 +52,65 @@ Enter a url to iframe: <input type='text' id='urlInput' placeholder='Enter a url
         $('#urlInput').keypress(function (e) {
             url = $('#urlInput')[0].value;
             if(e.which == 13) {
-                dataRef.set(iframe(url));
+                sendHTML(iframe(url, {width: '99%', height: '99%'}));
             }
         });
     </script>
 </p>
 
 <p>
-    <input type='text' id='pagesInput' placeholder='Enter a page...'>
+    Page: <input type='text' id='pagesInput' placeholder='Enter a page...'>
     <script type="text/javascript">
         $('#pagesInput').keypress(function (e) {
             url = $('#pagesInput')[0].value;
             if(e.which == 13) {
-                page(url);
+                sendPage(url);
+            }
+        });
+    </script>
+</p>
+
+<p>
+    Enter some html: <input type='text' id='htmlInput' placeholder='html'>
+    <script type="text/javascript">
+        $('#htmlInput').keypress(function (e) {
+            str = $('#htmlInput')[0].value;
+            if(e.which == 13) {
+                sendHTML(str);
+            }
+        });
+    </script>
+</p>
+
+<p>
+    Enter js: <input type="text" id='jsInput'>
+    <script>
+        $('#jsInput').keypress(function (e) {
+            str = $('#jsInput')[0].value;
+            if(e.which == 13) {
+                sendJS(str);
+            }
+        })
+    </script>
+</p>
+
+<p>
+    Enter css: <input type='text' id='cssInput'>
+    <script>
+        $('#cssInput').keypress(function (e) {
+            if(e.which == 13) {    
+                str = $('#cssInput')[0].value;
+                elements = str.split(';');
+                map = {}
+                for(idx in elements) {
+                    val = elements[idx];
+                    split = val.split(':');
+                    key = split[0].trim();
+                    value = split[1].trim();
+                    map[key] = value;
+                }
+                
+                sendCSS(map)
             }
         });
     </script>
